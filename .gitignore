@@ -1,0 +1,32 @@
+﻿# Compiled files
+target/
+*.class
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Environment files (CRITICAL - don't commit secrets!)
+.env
+*.env
+application-production.properties
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/
+
+# Maven wrapper (keep mvnw, mvnw.cmd, but ignore .mvn)
+.mvn/
+
+# Spring Boot
+spring-boot-devtools.properties
