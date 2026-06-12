@@ -68,6 +68,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/books/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/api/health", "/api/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                 
                 // Profile picture upload - allow authenticated users
                 .requestMatchers(HttpMethod.POST, "/api/users/profile/picture").authenticated()
