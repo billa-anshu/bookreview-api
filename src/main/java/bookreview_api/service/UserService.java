@@ -18,23 +18,23 @@ public class UserService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // Register new user
+    // Register new user - Let JPA generate UUID automatically
     public User register(String name, String email, String rawPassword, String role) {
         // Check if email already exists
         if (userRepository.existsByEmail(email)) {
             return null;
         }
 
-        // Generate user ID
-        long count = userRepository.count();
-        String userId = "U" + (count + 1000);
+        // Create user WITHOUT setting ID - JPA will generate UUID automatically
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword(passwordEncoder.encode(rawPassword));
+        newUser.setRole(role != null ? role : "USER");
+        newUser.setCreatedAt(LocalDateTime.now());
         
-        // Hash password
-        String encodedPassword = passwordEncoder.encode(rawPassword);
+        // Don't set ID here! Let JPA/Hibernate generate it
         
-        // Create and save user
-        User newUser = new User(userId, name, email, encodedPassword, role);
-        newUser.setCreatedAt(LocalDateTime.now());  // Set current timestamp
         return userRepository.save(newUser);
     }
 
@@ -54,5 +54,30 @@ public class UserService {
     // Find user by ID
     public User findById(String userId) {
         return userRepository.findById(userId).orElse(null);
+    }
+    
+    // Find user by email
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+    
+    // Check if email exists
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+    
+    // Update user profile
+    public User updateUser(String userId, String name, String profilePictureUrl) {
+        User user = findById(userId);
+        if (user != null) {
+            if (name != null && !name.isEmpty()) {
+                user.setName(name);
+            }
+            if (profilePictureUrl != null) {
+                user.setProfilePictureUrl(profilePictureUrl);
+            }
+            return userRepository.save(user);
+        }
+        return null;
     }
 }
