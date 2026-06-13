@@ -43,23 +43,22 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             email = login + "@github.com";
         }
         
+        // Let JPA generate the ID automatically - DON'T manually create IDs!
         User user = userRepository.findByEmail(email).orElse(null);
         
         if (user == null) {
-            long userCount = userRepository.count();
-            String userId = "U" + (userCount + 1000);
             user = new User();
-            user.setId(userId);
-            user.setName(name);
             user.setEmail(email);
+            user.setName(name);
             user.setPassword("");
             user.setRole("USER");
-            userRepository.save(user);
+            // DON'T set ID here - JPA will generate it automatically
+            user = userRepository.save(user);
+            System.out.println("Created new OAuth user with ID: " + user.getId());
         }
         
         String jwtToken = jwtUtil.generateToken(user.getId());
         
-        // Redirect to frontend with token in URL (most reliable method)
         String redirectUrl = String.format(
             "%s/login?token=%s&userId=%s&name=%s&email=%s&role=%s",
             frontendUrl,
@@ -71,8 +70,6 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         );
         
         System.out.println("OAuth Success - Redirecting to: " + redirectUrl);
-        
-        // Send redirect to frontend
         response.sendRedirect(redirectUrl);
     }
 }
