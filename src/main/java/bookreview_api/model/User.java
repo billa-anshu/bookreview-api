@@ -2,6 +2,7 @@ package com.bookreview.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +10,19 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
+    
     @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "VARCHAR(36)")
     private String id;
+    
+    @Column(unique = true, nullable = false)
     private String name;
+    
+    @Column(unique = true, nullable = false)
     private String email;
+    
     private String password;
     private String role;
     private String profilePictureUrl;
@@ -26,12 +36,17 @@ public class User {
     
     public User() {}
     
-    public User(String id, String name, String email, String password, String role) {
-        this.id = id;
+    public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (role == null) role = "USER";
     }
     
     // Getters and Setters
