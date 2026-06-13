@@ -73,7 +73,8 @@ public class ReviewController {
     @GetMapping("/my")
     public List<ReviewWithBookDTO> getMyReviews() {
         String currentUserId = getCurrentUserId();
-        List<Review> myReviews = reviewRepository.findByUser_Id(currentUserId);
+        // ✅ FIXED: Changed from findByUser_Id to findByUserId
+        List<Review> myReviews = reviewRepository.findByUserId(currentUserId);
         
         // Force initialization of book details
         for (Review review : myReviews) {
